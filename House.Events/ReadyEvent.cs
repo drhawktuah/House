@@ -11,7 +11,10 @@ namespace House.House.Events;
 
 public sealed class ReadyEvent : HouseBotEvent
 {
-    public ReadyEvent() : base("Ready") { }
+    public ReadyEvent() : base("Ready")
+    {
+        
+    }
 
     public override async Task MainAsync(object sender, EventArgs eventArgs)
     {
