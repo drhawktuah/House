@@ -49,9 +49,9 @@ public static partial class StringExtensions
     };
 
     /// <summary>
-    /// Masks a string by creating a new string with the length of the original string
-    /// Since strings in C# are immutable, we had to solve for that by making a new string with the exact same length of the original string
-    /// It also converts it to a codeblock
+    /// Masks a string by creating a new string with the length of the original string.
+    /// Since strings in C# are immutable, we had to solve for that by making a new string with the exact same length of the original string.
+    /// It also converts it to a codeblock.
     /// </summary>
     /// <param name="value">The original string</param>
     /// <param name="mask">The character to mask the characters with</param>
@@ -115,7 +115,7 @@ public static partial class StringExtensions
     }
 
     /// <summary>
-    /// Capitalizes letters when necessary. Since this isn't built-in and requires a different library, I made my own equivalent with other utilities
+    /// Capitalizes letters when necessary. Since this isn't built-in and requires a different library, I made my own equivalent with other utilities.
     /// </summary>
     /// <param name="input"></param>
     /// <returns>The new string</returns>

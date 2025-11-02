@@ -237,7 +237,11 @@ public sealed class HouseHelpFormatter : BaseHelpFormatter
                 commandBuilder.AppendLine($"`{context.Prefix}{command.Name}` -- {description}");
             }
 
-            embedBuilder.WithFooter($"type {context.Prefix}{command?.QualifiedName} `command` to get a commands information");
+            commandBuilder
+                .AppendLine()
+                .AppendLine($"**`type '{context.Prefix}{command?.QualifiedName} command' to get a commands information`**");
+
+            embedBuilder.WithThumbnail(context.Client.CurrentUser.AvatarUrl);
             embedBuilder.WithDescription(commandBuilder.ToString().Trim());
 
             Page page = HouseHelpFormatterUtils.BuildPage(embedBuilder);

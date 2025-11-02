@@ -6,11 +6,12 @@ using Microsoft.Extensions.Logging;
 
 namespace House.House.Extensions;
 
-[Obsolete("Declared obsolete in favor of the new House event registrar system")]
+[Obsolete("Marked as obsolete in favor of the new event registering system")]
 public static partial class DiscordClientExtensions
 {
     public static Dictionary<string, (object Target, EventInfo EventInfo, Delegate DelegateInstance)> Events => [];
 
+    [Obsolete("Marked as obsolete in favor of the new event registering system")]
     public static async Task RegisterEventsAsync(this DiscordClient client)
     {
         var commandsNext = client.GetCommandsNext();
@@ -32,6 +33,7 @@ public static partial class DiscordClientExtensions
         await Task.CompletedTask;
     }
 
+    [Obsolete("Marked as obsolete in favor of the new event registering system")]
     public static async Task UnregisterEventsAsync(this DiscordClient client)
     {
         var commandsNext = client.GetCommandsNext();
@@ -51,6 +53,7 @@ public static partial class DiscordClientExtensions
         await Task.CompletedTask;
     }
 
+    [Obsolete("Marked as obsolete in favor of the new event registering system")]
     public static async Task RegisterEventAsync<TAttribute>(object target, MethodInfo method) where TAttribute : Attribute
     {
         ArgumentNullException.ThrowIfNull(method);
@@ -93,6 +96,7 @@ public static partial class DiscordClientExtensions
         await Task.CompletedTask;
     }
 
+    [Obsolete("Marked as obsolete in favor of the new event registering system")]
     public static async Task UnregisterEventAsync<TAttribute>(object target, MethodInfo method) where TAttribute : Attribute
     {
         ArgumentNullException.ThrowIfNull(method);
@@ -141,6 +145,7 @@ public static partial class DiscordClientExtensions
     }
 }
 
+[Obsolete("Marked as obsolete in favor of the new event registering system")]
 [AttributeUsage(AttributeTargets.Method)]
 public class CommandsNextEventAttribute : Attribute
 {
@@ -154,6 +159,7 @@ public class CommandsNextEventAttribute : Attribute
     }
 }
 
+[Obsolete("Marked as obsolete in favor of the new event registering system")]
 [AttributeUsage(AttributeTargets.Method)]
 public class DiscordClientEventAttribute : Attribute
 {

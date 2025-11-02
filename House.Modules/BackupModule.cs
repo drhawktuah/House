@@ -21,7 +21,7 @@ public sealed class BackupModule : BaseCommandModule
     public required BackupRepository BackupRepository { get; set; }
 
     [Command("backup")]
-    [IsGuildOwner]
+    [IsStaffOrOwner(Position.Head_Admin)]
     [Cooldown(1, 1000, CooldownBucketType.Guild)]
     public async Task CreateBackupAsync(CommandContext context)
     {
@@ -128,6 +128,70 @@ public sealed class BackupModule : BaseCommandModule
             .WithTimestamp(DateTime.UtcNow);
 
         await context.RespondAsync(successEmbed);
+    }
+
+    [Command("restorebackup")]
+    [Description("Restore a previously created backup for this server")]
+    [IsStaffOrOwner(Position.Head_Admin)]
+    [Cooldown(1, 1000, CooldownBucketType.Guild)]
+    public async Task RestoreBackupAsync(CommandContext context)
+    {
+        var interactivity = context.Client.GetInteractivity();
+
+        var backup = await BackupRepository.TryGetAsync(context.Guild.Id);
+        if (backup is null)
+        {
+            await context.RespondAsync("No backup exists for this server");
+            return;
+        }
+
+        var confirmEmbed = new DiscordEmbedBuilder()
+            .WithColor(DiscordColor.Orange)
+            .WithTitle("Confirm Restore")
+            .WithDescription($"Are you sure you want to restore the backup for **{context.Guild.Name}**?\nThis will overwrite the current server state!")
+            .WithTimestamp(DateTime.UtcNow)
+            .WithFooter("React with ✅ to confirm or ❌ to cancel", context.Client.CurrentUser.AvatarUrl);
+
+        var message = await context.RespondAsync(confirmEmbed);
+
+        await message.CreateReactionAsync(DiscordEmoji.FromUnicode("✅"));
+        await message.CreateReactionAsync(DiscordEmoji.FromUnicode("❌"));
+
+        // Wait for user confirmation
+        var result = await interactivity.WaitForReactionAsync(
+            x => x.User == context.User && x.Message == message && (x.Emoji.Name == "✅" || x.Emoji.Name == "❌")
+        );
+
+        if (result.TimedOut || result.Result.Emoji.Name == "❌")
+        {
+            await context.RespondAsync("Restore operation cancelled.");
+            return;
+        }
+
+        // Restore the backup
+        var restoreResult = await BackupService.RestoreBackupAsync(context.Guild, backup);
+
+        // Notify success or failure
+        if (restoreResult is not null)
+        {
+            var successEmbed = new DiscordEmbedBuilder()
+                .WithColor(DiscordColor.SpringGreen)
+                .WithTitle("Backup Restored")
+                .WithDescription($"The backup for **{context.Guild.Name}** has been restored successfully.")
+                .WithTimestamp(DateTime.UtcNow);
+
+            await context.RespondAsync(successEmbed);
+        }
+        else
+        {
+            var failEmbed = new DiscordEmbedBuilder()
+                .WithColor(DiscordColor.Red)
+                .WithTitle("Restore Failed")
+                .WithDescription("An error occurred while restoring the backup.")
+                .WithTimestamp(DateTime.UtcNow);
+
+            await context.RespondAsync(failEmbed);
+        }
     }
 }
 

@@ -106,7 +106,7 @@ public sealed class Bot
         services.AddSingleton(sp => new StaffUserRepository(sp.GetRequiredService<IMongoDatabase>()));
         services.AddSingleton(sp => new StarboardRepository(sp.GetRequiredService<IMongoDatabase>()));
         services.AddSingleton(sp => new BackupRepository(sp.GetRequiredService<IMongoDatabase>()));
-        services.AddSingleton(sp => new BackupService(client, sp.GetRequiredService<BackupRepository>()));
+        services.AddSingleton(sp => new BackupService(sp.GetRequiredService<BackupRepository>()));
 
         services.AddSingleton(sp =>
         {
