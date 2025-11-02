@@ -24,7 +24,7 @@ public class HouseCommandsNextEvent : HouseBaseEvent
 
     public override async Task MainAsync(object sender, EventArgs eventArgs)
     {
-        if (sender is not DiscordClient client || eventArgs is not CommandEventArgs args)
+        if (sender is not DiscordClient || eventArgs is not CommandEventArgs)
         {
             return;
         }
@@ -41,7 +41,7 @@ public class HouseBotEvent : HouseBaseEvent
 
     public override async Task MainAsync(object sender, EventArgs eventArgs)
     {
-        if (sender is not DiscordClient client || eventArgs is not DiscordEventArgs args)
+        if (sender is not DiscordClient || eventArgs is not DiscordEventArgs)
         {
             return;
         }
