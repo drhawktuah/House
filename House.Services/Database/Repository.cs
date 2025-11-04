@@ -184,6 +184,31 @@ public sealed class StarboardRepository : ValidatedRepositoryBase<StarboardEntry
     public StarboardRepository(IMongoDatabase database) : base(database)
     {
     }
+
+    public new async Task<StarboardEntry?> TryGetAsync(ulong messageId)
+    {
+        return await Collection.Find(e => e.MessageID == messageId).FirstOrDefaultAsync();
+    }
+
+    public new async Task<StarboardEntry> GetAsync(ulong messageId)
+    {
+        var entry = await TryGetAsync(messageId);
+        if (entry == null)
+        {
+            RepositoryExceptionHelper.ThrowEntityNotFound<StarboardEntryNotFoundException>(messageId);
+        }
+
+        return entry!;
+    }
+
+    public new async Task DeleteAsync(ulong messageId)
+    {
+        var result = await Collection.DeleteOneAsync(e => e.MessageID == messageId);
+        if (result.DeletedCount == 0)
+        {
+            RepositoryExceptionHelper.ThrowEntityNotFound<StarboardEntryNotFoundException>(messageId);
+        }
+    }
 }
 
 public sealed class BackupRepository : ValidatedRepositoryBase<BackupGuild, GuildNotFoundException, GuildExistsException>

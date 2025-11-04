@@ -21,7 +21,7 @@ public sealed class BackupModule : BaseCommandModule
     public required BackupRepository BackupRepository { get; set; }
 
     [Command("backup")]
-    [IsStaffOrOwner(Position.Head_Admin)]
+    [IsStaffOrOwner(Position.HeadAdmin)]
     [Cooldown(1, 1000, CooldownBucketType.Guild)]
     [RequireGuild]
     public async Task CreateBackupAsync(CommandContext context)
@@ -133,7 +133,7 @@ public sealed class BackupModule : BaseCommandModule
 
     [Command("restorebackup")]
     [Description("Restore a previously created backup for this server")]
-    [IsStaffOrOwner(Position.Head_Admin)]
+    [IsStaffOrOwner(Position.HeadAdmin)]
     [Cooldown(1, 1000, CooldownBucketType.Guild)]
     [RequireGuild]
     public async Task RestoreBackupAsync(CommandContext context)

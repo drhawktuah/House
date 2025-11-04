@@ -7,7 +7,7 @@ public abstract class DatabaseEntity
     [BsonId]
     public ulong ID { get; set; }
 
-    [BsonElement("createdAt")]
+    [BsonElement("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public DatabaseEntity()

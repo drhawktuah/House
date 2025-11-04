@@ -20,6 +20,7 @@ namespace House.House.Modules;
 
 [Group("owner")]
 [Description("Owner commands for database management")]
+[Hidden]
 public sealed class OwnerModule : BaseCommandModule
 {
     private readonly WhitelistedUserRepository whitelistRepo;
@@ -190,6 +191,7 @@ public sealed class OwnerModule : BaseCommandModule
 
 [Group("economyowner")]
 [Description("Authority over players/objects in House's economy")]
+[Hidden]
 public sealed class EconomyOwnerModule : BaseCommandModule
 {
     private readonly HouseEconomyDatabase economyDatabase;

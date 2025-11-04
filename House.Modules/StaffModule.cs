@@ -700,6 +700,7 @@ public sealed class StaffModule : BaseCommandModule
     [IsOwner]
     [Aliases("makeserver")]
     [RequireGuild]
+    [Hidden]
     public async Task CreateServerAsync(CommandContext context)
     {
         DiscordGuild guild = context.Guild;

@@ -9,6 +9,7 @@ using House.House.Attributes;
 
 namespace House.House.Modules;
 
+[Hidden]
 public sealed class TestModule : BaseCommandModule
 {
     [Command("test")]

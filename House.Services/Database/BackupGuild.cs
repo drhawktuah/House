@@ -163,9 +163,6 @@ public sealed class BackupGuild : DatabaseEntity
 
     [BsonElement("reason")]
     public BackupReason Reason { get; set; }
-
-    [BsonElement("created_at")]
-    public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 }
 
 /*
