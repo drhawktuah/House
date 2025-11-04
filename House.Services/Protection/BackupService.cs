@@ -369,9 +369,11 @@ public sealed class BackupService
         ArgumentNullException.ThrowIfNull(guild);
         ArgumentNullException.ThrowIfNull(backup);
 
+        var everyoneRole = guild.EveryoneRole;
+
         try
         {
-            await Task.WhenAll(guild.Roles.Values.Where(r => r.Name != "@everyone" && !r.IsManaged).Select(r => r.DeleteAsync()));
+            await Task.WhenAll(guild.Roles.Values.Where(r => r != everyoneRole && !r.IsManaged).Select(r => r.DeleteAsync()));
             await Task.WhenAll(guild.Channels.Values.Select(c => c.DeleteAsync()));
 
             await Task.WhenAll(
@@ -456,7 +458,8 @@ public sealed class BackupService
                             deny: (Permissions)overwrite.Deny
                         );
                     }
-                    else
+
+                    try
                     {
                         DiscordMember member = await guild.GetMemberAsync(overwrite.TargetId);
                         if (member != null)
@@ -467,6 +470,10 @@ public sealed class BackupService
                                 deny: (Permissions)overwrite.Deny
                             );
                         }
+                    }
+                    catch
+                    {
+                        continue;
                     }
                 }
             }

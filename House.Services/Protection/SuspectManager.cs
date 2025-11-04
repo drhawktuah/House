@@ -12,37 +12,32 @@ public sealed class SuspectManager
     public IReadOnlyDictionary<ulong, SuspectMember> Suspects => suspects;
     private readonly Dictionary<ulong, SuspectMember> suspects = [];
 
-    public void AddSuspect(SuspectMember member)
+    public void AddOrUpdate(DiscordMember member)
     {
-        suspects.Add(member.ID, member);
-    }
-
-    public void AddSuspect(DiscordMember member)
-    {
-        SuspectMember suspectMember = SuspectMember.Convert(member);
-
-        suspects.Add(member.Id, suspectMember);
-    }
-
-    public void AddSuspect(DiscordMember member, Dictionary<AuditLogActionType, int>? violations = null)
-    {
-        SuspectMember suspectMember = new()
+        if (!suspects.TryGetValue(member.Id, out var suspect))
         {
-            ID = member.Id,
-            Username = member.Username,
-            Violations = violations ?? []
-        };
-
-        suspects.Add(member.Id, suspectMember);
+            suspect = SuspectMember.Convert(member);
+            suspects[member.Id] = suspect;
+        }
     }
 
-    public void RemoveSuspect(DiscordMember member)
+    public void IncrementViolation(DiscordMember member, AuditLogActionType actionType, int amount = 1)
     {
-        suspects.Remove(member.Id);
+        AddOrUpdate(member);
+
+        SuspectMember suspectMember = suspects[member.Id];
+        suspectMember.AddViolation(actionType, amount);
     }
 
-    public void RemoveSuspect(SuspectMember member)
+    public int GetViolationCount(DiscordMember member, AuditLogActionType actionType, TimeSpan window)
     {
-        suspects.Remove(member.ID);
+        if (!suspects.TryGetValue(member.Id, out var suspect))
+        {
+            return 0;
+        }
+
+        return suspect.GetViolationCount(actionType, window);
     }
+
+    public void RemoveSuspect(DiscordMember member) => suspects.Remove(member.Id);
 }
