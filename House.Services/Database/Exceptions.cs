@@ -99,3 +99,15 @@ public sealed class SuspectMemberExistsException : RepositoryException
     public SuspectMemberExistsException(ulong id)
         : base($"Suspect member with ID '{id}' already exists.") { }
 }
+
+public sealed class SnipedMessageNotFoundException : RepositoryException
+{
+    public SnipedMessageNotFoundException(ulong id)
+        : base($"Sniped message with ID '{id}' was not found.") { }
+}
+
+public sealed class SnipedMessageExistsException : RepositoryException
+{
+    public SnipedMessageExistsException(ulong id)
+        : base($"Sniped message with ID '{id}' already exists.") { }
+}

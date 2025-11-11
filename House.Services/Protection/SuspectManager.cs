@@ -9,23 +9,16 @@ namespace House.House.Services.Protection;
 
 public sealed class SuspectManager
 {
-    public IReadOnlyDictionary<ulong, SuspectMember> Suspects => suspects;
-    private readonly Dictionary<ulong, SuspectMember> suspects = [];
+    private ConcurrentDictionary<ulong, SuspectMember> suspects = [];
 
-    public void AddOrUpdate(DiscordMember member)
+    public SuspectMember AddOrUpdate(DiscordMember member)
     {
-        if (!suspects.TryGetValue(member.Id, out var suspect))
-        {
-            suspect = SuspectMember.Convert(member);
-            suspects[member.Id] = suspect;
-        }
+        return suspects.AddOrUpdate(member.Id, id => SuspectMember.Convert(member), (id, existing) => existing);
     }
 
     public void IncrementViolation(DiscordMember member, AuditLogActionType actionType, int amount = 1)
     {
-        AddOrUpdate(member);
-
-        SuspectMember suspectMember = suspects[member.Id];
+        SuspectMember suspectMember = AddOrUpdate(member);
         suspectMember.AddViolation(actionType, amount);
     }
 
@@ -39,5 +32,5 @@ public sealed class SuspectManager
         return suspect.GetViolationCount(actionType, window);
     }
 
-    public void RemoveSuspect(DiscordMember member) => suspects.Remove(member.Id);
+    public void RemoveSuspect(DiscordMember member) => suspects.TryRemove(member.Id, out _);
 }

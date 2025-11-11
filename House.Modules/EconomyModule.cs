@@ -339,11 +339,11 @@ public class EconomyModule : BaseCommandModule
 {
     public required HouseEconomyDatabase HouseEconomyDatabase { get; set; }
 
-    [Command("create")]
+    [Command("register")]
     [Aliases("join", "joineconomy")]
     [Description("Go outside if you use this command")]
     [RequireGuild]
-    public async Task CreateProfileAsync(CommandContext context)
+    public async Task RegisterPlayerAsync(CommandContext context)
     {
         await HouseEconomyDatabase.CreateUserAsync(context.User.Id);
 

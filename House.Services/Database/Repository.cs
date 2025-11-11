@@ -220,6 +220,24 @@ public sealed class BackupRepository : ValidatedRepositoryBase<BackupGuild, Guil
     }
 }
 
+public sealed class SnipeRepository : ValidatedRepositoryBase<SnipedMessage, SnipedMessageNotFoundException, SnipedMessageExistsException>
+{
+    protected override string CollectionName => "sniped_messages";
+
+    public SnipeRepository(IMongoDatabase database) : base(database)
+    {
+
+    }
+
+    public async Task<SnipedMessage?> GetLastMessageAsync(ulong channelId)
+    {
+        var filter = Builders<SnipedMessage>.Filter.Eq(x => x.ChannelID, channelId);
+        var cursor = Collection.Find(filter);
+
+        return await cursor.FirstOrDefaultAsync();
+    }
+}
+
 /*
 public abstract class Repository<T, TKey> where T : DatabaseEntity<TKey>
 {

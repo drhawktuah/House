@@ -50,10 +50,6 @@ public sealed class CommandErroredEvent : HouseCommandsNextEvent
                 break;
             */
 
-            case UserNotFoundException notFoundException:
-                await context.RespondAsync($"`{notFoundException.Message}`");
-                break;
-
             case NoBalanceChangeProvidedException noBalanceChangeProvided:
                 await context.RespondAsync($"`{noBalanceChangeProvided.Message}`");
                 break;
@@ -118,14 +114,16 @@ public sealed class CommandErroredEvent : HouseCommandsNextEvent
         {
             var message = check switch
             {
-                IsOwnerAttribute => "`this command is restricted to only the owner, which you are not`",
-                CooldownAttribute cooldown => $"`you can use this command again in {cooldown.GetRemainingCooldown(context).TotalSeconds:F1} seconds`",
+                IsOwnerAttribute => "`this command is restricted to the bot owner`",
+                CooldownAttribute cooldown => $"`you can use this command again in {FormatCooldown(cooldown.GetRemainingCooldown(context))}`",
                 RequireUserPermissionsAttribute requireUserPermissions => $"`you are missing permissions {string.Join(", ", requireUserPermissions.Permissions)}`",
                 RequireBotPermissionsAttribute requireBotPermissions => $"`i am missing permissions {string.Join(", ", requireBotPermissions.Permissions)}`",
                 IsPlayerAttribute => "`you are not registered as a player in the database`",
                 IsStaffAttribute => "`you are not a staff member with sufficient privileges to use this command`",
                 IsStaffOrOwnerAttribute => "`you must be staff or a bot owner to use this command`",
+                IsGuildOwner => "`you must be the server owner to run this command`",
                 RequireDirectMessageAttribute => "`you must be in direct messages to use this command`",
+                IsConfigExisting configExisting => $"`{configExisting}`",
                 _ => $"`requirement check failed. requirement is: {check}`"
             };
 
@@ -134,4 +132,24 @@ public sealed class CommandErroredEvent : HouseCommandsNextEvent
         }
     }
 
+    private static string FormatCooldown(TimeSpan time)
+    {
+        if (time.TotalSeconds < 1)
+        {
+            return "`less than a second`";
+        }
+
+        var parts = new[] {
+            (time.Days, "d"),
+            (time.Hours, "h"),
+            (time.Minutes, "m"),
+            (time.Seconds, "s")
+        };
+
+        var formatted = string.Join(" ", parts
+            .Where(p => p.Item1 > 0)
+            .Select(p => $"{p.Item1}{p.Item2}"));
+
+        return string.IsNullOrWhiteSpace(formatted) ? "0s" : formatted;
+    }
 }

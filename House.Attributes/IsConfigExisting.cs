@@ -30,5 +30,5 @@ public class IsConfigExisting : CheckBaseAttribute
         return config == null;
     }
 
-    public override string ToString() => "A guild configuration already exists for this server";
+    public override string ToString() => "Configuration already exists for this server";
 }

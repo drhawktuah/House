@@ -30,7 +30,6 @@ public sealed class StaffModule : BaseCommandModule
     [RequirePermissions(Permissions.BanMembers | Permissions.KickMembers | Permissions.ManageRoles)]
     [RequireBotPermissions(Permissions.Administrator)]
     [RequireGuild]
-    [IsStaffOrOwner(Position.Moderator)]
     public async Task AddRoleAsync(CommandContext context, DiscordMember member, DiscordRole role)
     {
         var guild = context.Guild;
@@ -63,11 +62,10 @@ public sealed class StaffModule : BaseCommandModule
 
     [Command("createrole")]
     [Aliases("newrole")]
-    [Cooldown(1, 30, CooldownBucketType.Guild)]
+    [Cooldown(2, 10, CooldownBucketType.Guild)]
     [RequirePermissions(Permissions.BanMembers | Permissions.KickMembers | Permissions.ManageRoles)]
     [RequireBotPermissions(Permissions.Administrator)]
     [RequireGuild]
-    [IsStaffOrOwner(Position.Moderator)]
     public async Task CreateRoleAsync(CommandContext context, params string[] data)
     {
         if (data.Length < 1)
@@ -137,7 +135,6 @@ public sealed class StaffModule : BaseCommandModule
     [RequirePermissions(Permissions.BanMembers | Permissions.KickMembers | Permissions.ManageRoles)]
     [RequireBotPermissions(Permissions.Administrator)]
     [RequireGuild]
-    [IsStaffOrOwner(Position.Moderator)]
     public async Task RemoveRoleAsync(CommandContext context, DiscordMember member, DiscordRole role)
     {
         var guild = context.Guild;
@@ -179,7 +176,6 @@ public sealed class StaffModule : BaseCommandModule
     [RequireGuild]
     [RequireBotPermissions(Permissions.KickMembers)]
     [RequireUserPermissions(Permissions.KickMembers)]
-    [IsStaffOrOwner(Position.Moderator)]
     public async Task KickMemberAsync(CommandContext context, DiscordMember member, [RemainingText] string reason = "none provided")
     {
         if (member == context.Member)
@@ -239,7 +235,6 @@ public sealed class StaffModule : BaseCommandModule
     [Description("Bans a user either outside of the server or within the server")]
     [RequireUserPermissions(Permissions.BanMembers)]
     [RequireBotPermissions(Permissions.BanMembers)]
-    [IsStaffOrOwner(Position.Moderator)]
     public async Task BanMemberAsync(CommandContext context, DiscordMember member, int deletedDays = 0, [RemainingText] string reason = "none provided")
     {
         if (member == context.Member)
@@ -355,7 +350,6 @@ public sealed class StaffModule : BaseCommandModule
     [Description("Unbans a user")]
     [RequireUserPermissions(Permissions.BanMembers)]
     [RequireBotPermissions(Permissions.BanMembers)]
-    [IsStaffOrOwner(Position.Moderator)]
     public async Task UnbanMemberAsync(CommandContext context, DiscordUser user, string reason = "none provided")
     {
         if (user == context.User)
@@ -378,7 +372,6 @@ public sealed class StaffModule : BaseCommandModule
     [Description("Locks a channel")]
     [RequireUserPermissions(Permissions.ManageChannels)]
     [RequireBotPermissions(Permissions.ManageChannels)]
-    [IsStaffOrOwner(Position.Moderator)]
     public async Task LockChannelAsync(CommandContext context)
     {
         var channel = context.Channel;
@@ -393,7 +386,6 @@ public sealed class StaffModule : BaseCommandModule
     [Description("Unlocks a channel")]
     [RequireUserPermissions(Permissions.ManageChannels)]
     [RequireBotPermissions(Permissions.ManageChannels)]
-    [IsStaffOrOwner(Position.Moderator)]
     public async Task UnlockChannelAsync(CommandContext context)
     {
         var channel = context.Channel;
@@ -434,8 +426,7 @@ public sealed class StaffModule : BaseCommandModule
     [RequireGuild]
     [Aliases("createguildconfig")]
     [Description("Creates a recognizable guild config for the bot")]
-    [RequireUserPermissions(Permissions.ManageGuild)]
-    [RequireBotPermissions(Permissions.KickMembers)]
+    [IsGuildOwner]
     [IsConfigExisting]
     public async Task CreateGuildConfigAsync(CommandContext context)
     {
@@ -670,154 +661,6 @@ public sealed class StaffModule : BaseCommandModule
         await guildRepo.AddAsync(newConfig);
 
         await context.RespondAsync("Guild configuration created successfully!");
-    }
-
-    enum ChannelAccess
-    {
-        Public, StaffOnly, Readonly
-    }
-
-    enum ChannelType
-    {
-        Text, Voice
-    }
-
-    class ServerChannel
-    {
-        public string Name { get; set; }
-        public ChannelAccess Access { get; set; }
-        public ChannelType Type { get; set; }
-
-        public ServerChannel(string name, ChannelAccess access, ChannelType type)
-        {
-            Name = name;
-            Access = access;
-            Type = type;
-        }
-    }
-
-    [Command("createserver")]
-    [IsOwner]
-    [Aliases("makeserver")]
-    [RequireGuild]
-    [Hidden]
-    public async Task CreateServerAsync(CommandContext context)
-    {
-        DiscordGuild guild = context.Guild;
-
-        await guild.DeleteAllChannelsAsync();
-
-        var everyoneRole = guild.EveryoneRole;
-
-        var rolesToCreate = new List<(string Name, DiscordColor Color, Permissions permissions, bool Hoist, bool Mentionable)>()
-        {
-            ("diagnostic niggas", new DiscordColor(0xff0000), Permissions.Administrator, true, false),
-            ("penile niggas", new DiscordColor(0x00b0f4), Permissions.ManageMessages | Permissions.KickMembers, true, true),
-            ("house niggas", new DiscordColor(0x713f20), Permissions.SendMessages | Permissions.ReadMessageHistory, false, false),
-            ("faggot niggas", new DiscordColor(0x808080), Permissions.None, false, false)
-        };
-
-        Dictionary<string, DiscordRole> createdRoles = [];
-
-        foreach (var (name, color, perms, hoist, mentionable) in rolesToCreate)
-        {
-            var existing = guild.Roles.Values.FirstOrDefault(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-            if (existing == null)
-            {
-                var newRole = await guild.CreateRoleAsync(
-                    name: name,
-                    permissions: perms,
-                    color: color,
-                    hoist: hoist,
-                    mentionable: mentionable
-                );
-
-                createdRoles[name] = newRole;
-            }
-        }
-
-        var staffRole = createdRoles["penile niggas"];
-        var memberRole = createdRoles["house niggas"];
-
-        foreach (var member in await guild.GetAllMembersAsync())
-        {
-            if (member.IsBot)
-            {
-                continue;
-            }
-
-            if (!member.Roles.Contains(memberRole))
-            {
-                await member.GrantRoleAsync(memberRole);
-            }
-        }
-
-        var channelStructure = new Dictionary<string, List<ServerChannel>>
-        {
-            ["important"] = [
-                new("rules", ChannelAccess.Readonly, ChannelType.Text),
-                new("announcements", ChannelAccess.Readonly, ChannelType.Text)
-            ],
-            ["general"] = [
-                new("general-chat", ChannelAccess.Public, ChannelType.Text),
-                new("introductions", ChannelAccess.Public, ChannelType.Text),
-                new("general-voice", ChannelAccess.Public, ChannelType.Voice)
-            ],
-            ["esex"] = [
-                new("general", ChannelAccess.Public, ChannelType.Voice),
-                new("esex", ChannelAccess.Public, ChannelType.Voice),
-            ],
-            ["Staff"] = [
-                new("staff-chat", ChannelAccess.StaffOnly, ChannelType.Text),
-                new("mod-logs", ChannelAccess.StaffOnly, ChannelType.Text),
-                new("staff-voice", ChannelAccess.StaffOnly, ChannelType.Voice)
-            ]
-        };
-
-        foreach (var category in channelStructure)
-        {
-            var categoryChannel = await guild.CreateChannelCategoryAsync(category.Key);
-
-            foreach (var channel in category.Value)
-            {
-                var overwrites = new List<DiscordOverwriteBuilder>();
-
-                switch (channel.Access)
-                {
-                    case ChannelAccess.Public:
-                        overwrites.Add(new DiscordOverwriteBuilder(everyoneRole)
-                            .Allow(Permissions.AccessChannels | Permissions.SendMessages | Permissions.ReadMessageHistory));
-                        break;
-
-                    case ChannelAccess.Readonly:
-                        overwrites.Add(new DiscordOverwriteBuilder(everyoneRole)
-                            .Allow(Permissions.AccessChannels | Permissions.ReadMessageHistory)
-                            .Deny(Permissions.SendMessages));
-                        break;
-
-                    case ChannelAccess.StaffOnly:
-                        overwrites.Add(new DiscordOverwriteBuilder(everyoneRole)
-                            .Deny(Permissions.AccessChannels));
-                        overwrites.Add(new DiscordOverwriteBuilder(staffRole)
-                            .Allow(Permissions.AccessChannels | Permissions.SendMessages | Permissions.ReadMessageHistory));
-                        break;
-                }
-
-                switch (channel.Type)
-                {
-                    case ChannelType.Text:
-                        await guild.CreateTextChannelAsync(channel.Name, parent: categoryChannel, overwrites: overwrites);
-                        break;
-
-                    case ChannelType.Voice:
-                        await guild.CreateVoiceChannelAsync(channel.Name, parent: categoryChannel, overwrites: overwrites);
-                        break;
-                }
-            }
-        }
-
-        await context.Channel.SendMessageAsync("done nigga");
     }
 }
 

@@ -10,8 +10,6 @@ using ONFQ.ONFQ.Utilities;
 
 namespace House.House.Services.Fuzzy;
 
-
-
 /*
 public sealed class HateFuzzyMatchingService
 {
@@ -88,7 +86,6 @@ public sealed class HateFuzzyMatchingService
         else
         {
             embedBuilder.WithTitle($"command '{query}' cannot be found. alternatives:");
-
 
             //int maxCommandLength = filteredResults.Max(r => r.Command.Name.Length);
             //int maxPercentageLength = filteredResults.Max(r => r.Similarity.Length);
@@ -245,7 +242,6 @@ public sealed class HateFuzzyMatchingService
         Console.WriteLine($"Loaded {commands.Count} commands into matcher");
     }
 }
-
 
 /*
 public sealed class HateFuzzyMatchingService

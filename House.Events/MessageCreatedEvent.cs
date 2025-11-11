@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -33,16 +34,27 @@ public sealed class MessageCreatedEvent : HouseBotEvent
         }
 
         var message = args.Message;
-
-        // await antiNuke.HandleMessageAsync(message);
-
         if (message.MentionedUsers.Any(u => u == client.CurrentUser))
         {
-            await message.Channel.SendMessageAsync("Yes, hello!");
+            string[] replies = [
+                "It's never lupus",
+                "Hi!",
+                "Yes, hello!",
+                "Cuddy = Katie",
+                "VICODIN."
+            ];
+
+            int index = (BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4), 0) & int.MaxValue) % replies.Length;
+
+            await message.RespondAsync(replies[index]);
             return;
         }
 
         var commandsNext = client.GetCommandsNext();
+
+        var antiNukeService = commandsNext.Services.GetRequiredService<AntiNukeService>();
+
+        await antiNukeService.HandleMessageAsync(message);
 
         var fuzzyService = commandsNext.Services.GetRequiredService<HouseFuzzyMatchingService>();
         var config = commandsNext.Services.GetRequiredService<Config>();
@@ -70,7 +82,6 @@ public sealed class MessageCreatedEvent : HouseBotEvent
             var embed = await fuzzyService.ToDiscordEmbed(commandName, results);
 
             await message.Channel.SendMessageAsync(embed);
-
             return;
         }
 

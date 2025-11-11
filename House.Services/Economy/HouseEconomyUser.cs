@@ -13,6 +13,9 @@ public class HouseEconomyUser
     [BsonRepresentation(BsonType.String)]
     public ulong ID { get; set; }
 
+    [BsonElement("bank")]
     public long Bank { get; set; } = 0;
+
+    [BsonElement("cash")]
     public long Cash { get; set; } = 0;
 }

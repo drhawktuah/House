@@ -7,7 +7,9 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using House.House.Extensions;
+using House.House.Services.Database;
 using House.House.Utils;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace House.House.Modules;
 
@@ -49,6 +51,12 @@ public sealed class FunModule : BaseCommandModule
         var lastMessage = messages.FirstOrDefault(m => m.Author == member);
 
         if (lastMessage == null)
+        {
+            await context.RespondAsync($"No recent message found from {member.Username} in this chat");
+            return;
+        }
+
+        if(string.IsNullOrWhiteSpace(lastMessage.Content))
         {
             await context.RespondAsync($"No recent message found from {member.Username} in this chat");
             return;
@@ -241,5 +249,29 @@ public sealed class FunModule : BaseCommandModule
         embedBuilder.WithImageUrl(EmbedUtils.ImageURL);
 
         await context.RespondAsync(embedBuilder);
+    }
+
+    [Command("snipe")]
+    [Aliases("getdeletedmessage")]
+    [Description("Shows the last deleted message in this channel")]
+    public async Task SnipeAsync(CommandContext context)
+    {
+        SnipeRepository repository = context.CommandsNext.Services.GetRequiredService<SnipeRepository>();
+
+        SnipedMessage? sniped = await repository.GetLastMessageAsync(context.Channel.Id);
+
+        if (sniped == null)
+        {
+            await context.RespondAsync("nothing to snipe!");
+            return;
+        }
+
+        var embed = new DiscordEmbedBuilder()
+            .WithAuthor(sniped.AuthorName)
+            .WithDescription(sniped.Content)
+            .WithFooter($"Deleted at {sniped.DeletedAt:u}")
+            .WithColor(DiscordColor.Orange);
+
+        await context.RespondAsync(embed: embed.Build());
     }
 }

@@ -49,6 +49,8 @@ public sealed class Bot
         await client.InitializeAsync();
         await client.ConnectAsync();
 
+        commandsNext.Services.GetRequiredService<AntiNukeService>(); // please ignore this, it just forces the anti-nuke service to initialize
+
         await Task.Delay(-1);
     }
 
@@ -89,8 +91,6 @@ public sealed class Bot
         });
 
         services.AddSingleton<HouseFuzzyMatchingService>();
-        services.AddSingleton<AntiNukeService>();
-
         services.AddSingleton<IMongoClient>(sp => new MongoClient(config.DBConnectionURL));
 
         services.AddSingleton(sp =>
@@ -107,6 +107,9 @@ public sealed class Bot
         services.AddSingleton(sp => new StarboardRepository(sp.GetRequiredService<IMongoDatabase>()));
         services.AddSingleton(sp => new BackupRepository(sp.GetRequiredService<IMongoDatabase>()));
         services.AddSingleton(sp => new BackupService(sp.GetRequiredService<BackupRepository>()));
+        services.AddSingleton(sp => new SnipeRepository(sp.GetRequiredService<IMongoDatabase>()));
+        services.AddSingleton(sp => new SuspectMemberRepository(sp.GetRequiredService<IMongoDatabase>()));
+        services.AddSingleton(sp => new AntiNukeService(client));
 
         services.AddSingleton(sp =>
         {

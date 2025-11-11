@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -25,8 +26,8 @@ public sealed class AntiNukeService
     private readonly GuildRepository guildRepository;
     private readonly StaffUserRepository staffUserRepository;
 
-    private readonly Dictionary<ulong, List<DateTime>> messageTimestamps = [];
-    private readonly Dictionary<ulong, int> messageViolations = [];
+    private readonly ConcurrentDictionary<ulong, List<DateTime>> messageTimestamps = [];
+    private readonly ConcurrentDictionary<ulong, int> messageViolations = [];
 
     public AntiNukeService(DiscordClient client)
     {
@@ -98,7 +99,7 @@ public sealed class AntiNukeService
                         break;
                     default:
                         await member.RemoveAsync("third-level spam punishment");
-                        messageViolations.Remove(member.Id);
+                        messageViolations.Remove(member.Id, out _);
                         break;
                 }
             }

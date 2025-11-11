@@ -11,6 +11,7 @@ using House.House.Utils;
 namespace House.House.Modules;
 
 [Description("House's free OnlyFans, Fansly and Patreon service for all! (THIS DOES NOT BYPASS PAYWALLS)")]
+[Hidden]
 public sealed class CoomerModule : BaseCommandModule
 {
     public required CoomerClient Coomer { get; set; }
