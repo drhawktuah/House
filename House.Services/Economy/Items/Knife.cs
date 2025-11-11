@@ -19,7 +19,7 @@ public sealed class Katana : Knife
         ItemName = "Katana";
         Quantity = quantity;
         Value = 250;
-        IsSingularItem = false;
+        IsStackable = false;
     }
 }
 
@@ -30,7 +30,7 @@ public sealed class Dagger : Knife
         ItemName = "Dagger";
         Quantity = quantity;
         Value = 75;
-        IsSingularItem = false;
+        IsStackable = false;
         IsSerrated = false;
     }
 }
@@ -42,7 +42,7 @@ public sealed class BowieKnife : Knife
         ItemName = "Bowie Knife";
         Quantity = quantity;
         Value = 150;
-        IsSingularItem = false;
+        IsStackable = false;
         IsSerrated = true;
     }
 }
@@ -54,7 +54,7 @@ public sealed class Karambit : Knife
         ItemName = "Karambit";
         Quantity = quantity;
         Value = 400;
-        IsSingularItem = false;
+        IsStackable = false;
     }
 }
 
@@ -65,7 +65,7 @@ public sealed class Switchblade : Knife
         ItemName = "Switchblade";
         Quantity = quantity;
         Value = 175;
-        IsSingularItem = false;
+        IsStackable = false;
     }
 }
 
@@ -76,6 +76,6 @@ public sealed class Machete : Knife
         ItemName = "Machete";
         Quantity = quantity;
         Value = 125;
-        IsSingularItem = false;
+        IsStackable = false;
     }
 }

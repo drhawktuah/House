@@ -15,7 +15,9 @@ public enum AmmoType
     Bolts = 3,
     PlasmaCell = 4,
     Arc = 5,
-    Air = 6
+    Air = 6,
+    FiveFiveSix = 7,
+    SevenSixTwo = 8
 }
 
 
@@ -30,9 +32,6 @@ public class Gun : HouseEconomyItem
     [BsonElement("range")]
     public float Range { get; set; } = 0f;
 
-    [BsonElement("description")]
-    public string Description { get; set; } = "None provided";
-
     [BsonElement("ammo_type")]
     [BsonRepresentation(MongoDB.Bson.BsonType.String)]
     public AmmoType AmmoType { get; set; } = AmmoType.None;
@@ -42,9 +41,6 @@ public class Gun : HouseEconomyItem
 
     [BsonElement("fire_rate")]
     public float FireRate { get; set; } = 0f;
-
-    [BsonElement("is_purchasable")]
-    public bool IsPurchaseable { get; set; } = true;
 }
 
 public sealed class Handgun : Gun
@@ -54,7 +50,7 @@ public sealed class Handgun : Gun
         ItemName = "Handgun";
         Quantity = quantity;
         Value = 1500;
-        IsSingularItem = true;
+        IsStackable = true;
 
         Damage = 35;
         Range = 50f;
@@ -75,7 +71,7 @@ public sealed class Shotgun : Gun
         ItemName = "Shotgun";
         Quantity = quantity;
         Value = 3500;
-        IsSingularItem = true;
+        IsStackable = true;
 
         Damage = 90;
         Range = 25f;
@@ -96,7 +92,7 @@ public sealed class SniperRifle : Gun
         ItemName = "Sniper Rifle";
         Quantity = quantity;
         Value = 7000;
-        IsSingularItem = true;
+        IsStackable = true;
 
         Damage = 150;
         Range = 200f;
@@ -110,6 +106,38 @@ public sealed class SniperRifle : Gun
     }
 }
 
+public sealed class AssaultRifle : Gun
+{
+    public AssaultRifle(int quantity = 1)
+    {
+        ItemName = "Assault Rifle";
+        Quantity = quantity;
+        Value = 5000;
+        IsStackable = true;
+        Damage = 45;
+        Range = 100f;
+        AmmoType = AmmoType.FiveFiveSix;
+        MagazineSize = 30;
+        FireRate = 8.5f;
+    }
+}
+
+public sealed class LMG : Gun
+{
+    public LMG(int quantity = 1)
+    {
+        ItemName = "Light Machine Gun";
+        Quantity = quantity;
+        Value = 6000;
+        IsStackable = true;
+        Damage = 60;
+        Range = 80f;
+        AmmoType = AmmoType.SevenSixTwo;
+        MagazineSize = 100;
+        FireRate = 6.0f;
+    }
+}
+
 public sealed class Crossbow : Gun
 {
     public Crossbow(int quantity = 1)
@@ -117,7 +145,7 @@ public sealed class Crossbow : Gun
         ItemName = "Crossbow";
         Quantity = quantity;
         Value = 750;
-        IsSingularItem = true;
+        IsStackable = true;
 
         Damage = 60;
         Range = 40f;
@@ -140,7 +168,7 @@ public sealed class RayGun : Gun
         ItemName = "Ray Gun";
         Quantity = 1;
         Value = 100_000;
-        IsSingularItem = true;
+        IsStackable = true;
         IsSpecial = true;
 
         Damage = 350;
@@ -164,7 +192,7 @@ public sealed class RayGunMarkII : Gun
         ItemName = "Ray Gun";
         Quantity = 1;
         Value = 150_000;
-        IsSingularItem = true;
+        IsStackable = true;
         IsSpecial = true;
 
         Damage = 275;
@@ -188,7 +216,7 @@ public sealed class WunderwaffeDG2 : Gun
         ItemName = "Wunderwaffe DG-2";
         Quantity = 1;
         Value = 10_000_000;
-        IsSingularItem = true;
+        IsStackable = true;
         IsSpecial = true;
 
         Damage = 10000;
@@ -212,7 +240,7 @@ public sealed class ThunderGun : Gun
         ItemName = "Thunder Gun";
         Quantity = 1;
         Value = 10_000_000;
-        IsSingularItem = true;
+        IsStackable = true;
         IsSpecial = true;
 
         Damage = 10000;

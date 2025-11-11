@@ -13,11 +13,17 @@ public class HouseEconomyItem
     [BsonElement("value")]
     public long Value { get; set; } = 0;
 
-    [BsonElement("is_singular_item")]
-    public bool IsSingularItem { get; set; } = false;
+    [BsonElement("is_stackable")]
+    public bool IsStackable { get; set; } = false;
 
     [BsonElement("rarity")]
     [BsonRepresentation(MongoDB.Bson.BsonType.String)]
     public Rarity Rarity { get; set; } = Rarity.Common;
+
+    [BsonElement("description")]
+    public string Description { get; set; } = "None provided";
+
+    [BsonElement("is_purchasable")]
+    public bool IsPurchaseable { get; set; } = true;
 }
 
