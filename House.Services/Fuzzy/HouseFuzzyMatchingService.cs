@@ -12,15 +12,15 @@ using ONFQ.ONFQ.Utilities;
 
 namespace House.House.Services.Fuzzy;
 
-/*
-public sealed class HateFuzzyMatchingService
+
+public sealed class HouseFuzzyMatchingService
 {
     private readonly CommandsNextExtension commandsNext;
     private readonly Dictionary<string, Command> commands = [];
 
     private readonly bool isAdminOrOwner;
 
-    public HateFuzzyMatchingService(CommandsNextExtension commandsNext, bool isAdminOrOwner = false)
+    public HouseFuzzyMatchingService(CommandsNextExtension commandsNext, bool isAdminOrOwner = false)
     {
         this.commandsNext = commandsNext;
         this.isAdminOrOwner = isAdminOrOwner;
@@ -28,7 +28,7 @@ public sealed class HateFuzzyMatchingService
         GetCommands();
     }
 
-    public IEnumerable<HateFuzzyResult> GetResults(string query)
+    public IEnumerable<HouseFuzzyResult> GetResults(string query)
     {
         if (string.IsNullOrWhiteSpace(query))
         {
@@ -47,7 +47,7 @@ public sealed class HateFuzzyMatchingService
             int distance = CalculateDistance(query, command);
             int percentage = CalculatePercentage(distance, Math.Max(name.Length, query.Length));
 
-            var result = new HateFuzzyResult
+            var result = new HouseFuzzyResult
             {
                 Command = command,
                 ModuleName = command.Module?.ModuleType.Name ?? "no module found...",
@@ -63,69 +63,40 @@ public sealed class HateFuzzyMatchingService
         }
     }
 
-    public Task<DiscordEmbed> ToDiscordEmbed(string query, IEnumerable<HateFuzzyResult> results)
+    public Task<DiscordEmbed> ToDiscordEmbed(string query, IEnumerable<HouseFuzzyResult> results)
     {
-        //var filteredResults = results
-        //.Where(r => r.Percentage >= 10)
-        //.OrderByDescending(r => r.Percentage)
-        //.ToList();
-
-        var filteredResults = results
-            .Where(r => r.Percentage >= 10)
+        var groupedResults = results
+            .Where(r => r.Percentage >= 0)
             .GroupBy(r => r.Percentage)
             .OrderByDescending(g => g.Key)
             .ToList();
 
         var embedBuilder = new DiscordEmbedBuilder()
-            .WithColor(EmbedUtils.EmbedColor);
+            .WithColor(EmbedUtils.EmbedColor)
+            .WithFooter("emojis indicate how closely a command matched your query", commandsNext.Client.CurrentUser.AvatarUrl)
+            .WithThumbnail(commandsNext.Client.CurrentUser.GetAvatarUrl(DSharpPlus.ImageFormat.Png, 1024));
 
-        var stringBuilder = new StringBuilder();
+        var description = new StringBuilder();
 
-        if (filteredResults.Count == 0)
+        if (groupedResults.Count == 0)
         {
-            stringBuilder.AppendLine($"no matches for '{query}' have been found");
+            description.AppendLine($"no matches for '{query}' have been found");
         }
         else
         {
-            embedBuilder.WithTitle($"command '{query}' cannot be found. alternatives:");
+            embedBuilder.Title = $"command '{query}' cannot be found. showing alternatives:";
 
-            //int maxCommandLength = filteredResults.Max(r => r.Command.Name.Length);
-            //int maxPercentageLength = filteredResults.Max(r => r.Similarity.Length);
+            foreach (var group in groupedResults)
+            {
+                string icon = GetColoredPercentage(group.Key);
+                string similarity = $"`{group.Key}%`".PadLeft(5);
+                string commandList = string.Join(", ", group.Select(r => $"`{r.Command.Name}`"));
 
-            //foreach (var result in filteredResults)
-            //{
-            //string command = result.Command.Name;
-            //string similarity = result.Similarity;
-
-            //int commandPadding = maxCommandLength - command.Length + 4;
-            //int similarityPadding = maxPercentageLength - similarity.Length;
-
-            //string paddedCommand = command + new string(' ', commandPadding + 2);
-            //string paddedSimilarity = new string(' ', similarityPadding) + similarity;
-
-            //stringBuilder.AppendLine($"{result.Icon} `{paddedCommand}{paddedSimilarity}`");
-
-            //embedBuilder.AddField($"{command}", $"{result.Icon} `{similarity}`", true);
+                description.AppendLine($"{icon} {similarity} {commandList}");
+            }
         }
 
-
-        foreach (var group in filteredResults)
-        {
-            int percentage = group.Key;
-
-            string similarity = $"`{percentage}%`";
-            string icon = GetColoredPercentage(percentage);
-
-            var commandsLine = string.Join(", ", group.Select(r => $"`{r.Command.Name}`"));
-
-            stringBuilder.AppendLine($"{icon} {similarity.PadLeft(4)} {commandsLine}");
-        }
-
-        embedBuilder.WithFooter($"emojis indicate the relation between your query and the commands specified", commandsNext.Client.CurrentUser.AvatarUrl);
-
-        embedBuilder.WithDescription(stringBuilder.ToString());
-        embedBuilder.WithThumbnail(commandsNext.Client.CurrentUser.GetAvatarUrl(DSharpPlus.ImageFormat.Png, 1024));
-
+        embedBuilder.WithDescription(description.ToString());
         return Task.FromResult(embedBuilder.Build());
     }
 
@@ -245,18 +216,8 @@ public sealed class HateFuzzyMatchingService
     }
 }
 
+
 /*
-public sealed class HateFuzzyMatchingService
-{
-    private readonly Dictionary<string, Dictionary<string, int>> commandVectors = [];
-
-    public HateFuzzyMatchingService()
-    {
-
-    }
-}
-*/
-
 public sealed class HouseFuzzyMatchingService
 {
     private readonly CommandsNextExtension commandsNext;
@@ -388,3 +349,4 @@ public sealed class HouseFuzzyMatchingService
         }
     }
 }
+*/
