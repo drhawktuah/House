@@ -7,9 +7,8 @@ namespace House.House.Services.Economy.Items;
 
 public sealed class Lockpick : HouseEconomyItem
 {
-    public Lockpick(int quantity = 1)
+    public Lockpick(int quantity = 1) : base("Lockpick")
     {
-        ItemName = "Lockpick";
         Quantity = quantity;
         Value = 250;
         IsStackable = false;
@@ -18,9 +17,8 @@ public sealed class Lockpick : HouseEconomyItem
 
 public sealed class Toolkit : HouseEconomyItem
 {
-    public Toolkit(int quantity = 1)
+    public Toolkit(int quantity = 1) : base("Toolkit")
     {
-        ItemName = "Toolkit";
         Quantity = quantity;
         Value = 500;
         IsStackable = true;
@@ -29,10 +27,9 @@ public sealed class Toolkit : HouseEconomyItem
 
 public sealed class Backpack : HouseEconomyItem
 {
-    public Backpack()
+    public Backpack(int quantity = 1) : base("Backpack")
     {
-        ItemName = "Backpack";
-        Quantity = 1;
+        Quantity = quantity;
         Value = 750;
         IsStackable = true;
     }

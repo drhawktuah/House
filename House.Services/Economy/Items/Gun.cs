@@ -41,13 +41,17 @@ public class Gun : HouseEconomyItem
 
     [BsonElement("fire_rate")]
     public float FireRate { get; set; } = 0f;
+
+    protected Gun(string itemName) : base(itemName)
+    {
+        
+    }
 }
 
 public sealed class Handgun : Gun
 {
-    public Handgun(int quantity = 1)
+    public Handgun(int quantity = 1) : base("Handgun")
     {
-        ItemName = "Handgun";
         Quantity = quantity;
         Value = 1500;
         IsStackable = true;
@@ -66,9 +70,8 @@ public sealed class Handgun : Gun
 
 public sealed class Shotgun : Gun
 {
-    public Shotgun(int quantity = 1)
+    public Shotgun(int quantity = 1) : base("Shotgun")
     {
-        ItemName = "Shotgun";
         Quantity = quantity;
         Value = 3500;
         IsStackable = true;
@@ -87,9 +90,8 @@ public sealed class Shotgun : Gun
 
 public sealed class SniperRifle : Gun
 {
-    public SniperRifle(int quantity = 1)
+    public SniperRifle(int quantity = 1) : base("Sniper Rifle")
     {
-        ItemName = "Sniper Rifle";
         Quantity = quantity;
         Value = 7000;
         IsStackable = true;
@@ -108,25 +110,28 @@ public sealed class SniperRifle : Gun
 
 public sealed class AssaultRifle : Gun
 {
-    public AssaultRifle(int quantity = 1)
+    public AssaultRifle(int quantity = 1) : base("Assault Rifle")
     {
-        ItemName = "Assault Rifle";
         Quantity = quantity;
         Value = 5000;
         IsStackable = true;
+
         Damage = 45;
         Range = 100f;
         AmmoType = AmmoType.FiveFiveSix;
-        MagazineSize = 30;
+        MagazineSize = 45;
         FireRate = 8.5f;
+
+        Description = "For when you need to spray someone into mince.";
+
+        Rarity = Rarity.Rare;
     }
 }
 
 public sealed class LMG : Gun
 {
-    public LMG(int quantity = 1)
+    public LMG(int quantity = 1) : base("Light Machine Gun")
     {
-        ItemName = "Light Machine Gun";
         Quantity = quantity;
         Value = 6000;
         IsStackable = true;
@@ -135,12 +140,16 @@ public sealed class LMG : Gun
         AmmoType = AmmoType.SevenSixTwo;
         MagazineSize = 100;
         FireRate = 6.0f;
+
+        Description = "A portable machine gun used for spray and pray.";
+
+        Rarity = Rarity.Epic;
     }
 }
 
 public sealed class Crossbow : Gun
 {
-    public Crossbow(int quantity = 1)
+    public Crossbow(int quantity = 1) : base("Crossbow")
     {
         ItemName = "Crossbow";
         Quantity = quantity;
@@ -163,9 +172,8 @@ public sealed class Crossbow : Gun
 
 public sealed class RayGun : Gun
 {
-    public RayGun()
+    public RayGun() : base("Ray Gun")
     {
-        ItemName = "Ray Gun";
         Quantity = 1;
         Value = 100_000;
         IsStackable = true;
@@ -187,9 +195,8 @@ public sealed class RayGun : Gun
 
 public sealed class RayGunMarkII : Gun
 {
-    public RayGunMarkII()
+    public RayGunMarkII() : base("Ray Gun Mark II")
     {
-        ItemName = "Ray Gun";
         Quantity = 1;
         Value = 150_000;
         IsStackable = true;
@@ -211,9 +218,8 @@ public sealed class RayGunMarkII : Gun
 
 public sealed class WunderwaffeDG2 : Gun
 {
-    public WunderwaffeDG2()
+    public WunderwaffeDG2() : base("Wunderwaffe DG-2")
     {
-        ItemName = "Wunderwaffe DG-2";
         Quantity = 1;
         Value = 10_000_000;
         IsStackable = true;
@@ -235,9 +241,8 @@ public sealed class WunderwaffeDG2 : Gun
 
 public sealed class ThunderGun : Gun
 {
-    public ThunderGun()
+    public ThunderGun() : base("Thunder Gun")
     {
-        ItemName = "Thunder Gun";
         Quantity = 1;
         Value = 10_000_000;
         IsStackable = true;

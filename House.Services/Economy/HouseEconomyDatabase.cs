@@ -134,4 +134,104 @@ public class HouseEconomyDatabase
             throw new UserNotFoundException(userID);
         }
     }
+
+    public async Task RemoveItemAsync(ulong userId, string itemName, int quantity = 1)
+    {
+        var user = await GetUserAsync(userId);
+        var inventoryItem = user.Inventory.FirstOrDefault(i => i.ItemName == itemName);
+
+        if (inventoryItem == null)
+        {
+            return;
+        }
+
+        if (inventoryItem.IsStackable)
+        {
+            inventoryItem.Quantity -= quantity;
+
+            if (inventoryItem.Quantity <= 0)
+            {
+                user.Inventory.Remove(inventoryItem);
+            }
+        }
+        else
+        {
+            user.Inventory.Remove(inventoryItem);
+        }
+
+        await UpdateUserAsync(user);
+    }
+
+    public async Task<PurchaseResult> BuyItemAsync(ulong userID, HouseEconomyVendor vendor, string itemName, int quantity = 1)
+    {
+        if (string.IsNullOrWhiteSpace(itemName) || quantity <= 0)
+        {
+            return PurchaseResult.InvalidQuantity;
+        }
+
+        var user = await GetUserAsync(userID);
+        var item = vendor.Inventory.FirstOrDefault(i => i.ItemName.Equals(itemName, StringComparison.OrdinalIgnoreCase));
+
+        if (item == null)
+        {
+            return PurchaseResult.ItemNotFound;
+        }
+
+        if (!item.IsPurchaseable)
+        {
+            return PurchaseResult.NotPurchasable;
+        }
+
+        long itemPrice = vendor.GetPrice(item);
+        long totalPrice = itemPrice * quantity;
+
+        if (user.Cash < totalPrice)
+        {
+            return PurchaseResult.NotEnoughCash;
+        }
+
+        user.Cash -= totalPrice;
+
+        var purchased = item.CloneWithQuantity(quantity);
+
+        var existingItem = user.Inventory.FirstOrDefault(i => i.ItemName.Equals(itemName, StringComparison.OrdinalIgnoreCase));
+        if (existingItem != null && existingItem.IsStackable)
+        {
+            existingItem.Quantity += quantity;
+        }
+        else
+        {
+            user.Inventory.Add(purchased);
+        }
+
+        await UpdateUserAsync(user);
+
+        return PurchaseResult.Success;
+    }
+
+    public async Task<PurchaseResult> SellItemAsync(ulong userID, HouseEconomyVendor vendor, string itemName, int quantity = 1)
+    {
+        if (string.IsNullOrWhiteSpace(itemName) || quantity <= 0)
+        {
+            return PurchaseResult.InvalidInput;
+        }
+
+        var user = await GetUserAsync(userID);
+        var item = user.Inventory.FirstOrDefault(i => i.ItemName.Equals(itemName, StringComparison.OrdinalIgnoreCase));
+
+        if (item == null)
+        {
+            return PurchaseResult.ItemNotFound;
+        }
+
+        long sellPrice = (long)(vendor.GetPrice(item) * 0.5) * quantity;
+
+        await RemoveItemAsync(userID, item.ItemName, quantity);
+
+        user.Cash += sellPrice;
+
+        await UpdateUserAsync(user);
+
+        return PurchaseResult.Success;
+    }
 }

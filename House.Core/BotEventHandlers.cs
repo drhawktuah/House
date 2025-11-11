@@ -336,7 +336,8 @@ public static class BotEventHandlers
         var command = commandsNext.FindCommand(commandName, out var _);
         if (command == null)
         {
-            var results = fuzzyService.GetResults(commandName, 50, mode: ONFQ.ONFQ.Models.BlendMode.BlendAll);
+            //var results = fuzzyService.GetResults(commandName, 50, mode: ONFQ.ONFQ.Models.BlendMode.BlendAll);
+            var results = fuzzyService.GetResults(commandName);
             var embed = await fuzzyService.ToDiscordEmbed(commandName, results);
 
             await message.Channel.SendMessageAsync(embed);

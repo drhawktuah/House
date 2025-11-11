@@ -2,10 +2,10 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace House.House.Services.Economy;
 
-public class HouseEconomyItem
+public abstract class HouseEconomyItem
 {
     [BsonElement("item_name")]
-    public required string ItemName { get; set; }
+    public string ItemName { get; init; }
 
     [BsonElement("quantity")]
     public int Quantity { get; set; } = 1;
@@ -25,5 +25,17 @@ public class HouseEconomyItem
 
     [BsonElement("is_purchasable")]
     public bool IsPurchaseable { get; set; } = true;
-}
 
+    protected HouseEconomyItem(string itemName)
+    {
+        ItemName = itemName;
+    }
+
+    public virtual HouseEconomyItem CloneWithQuantity(int quantity)
+    {
+        var clone = (HouseEconomyItem)MemberwiseClone();
+        clone.Quantity = IsStackable ? quantity : 1;
+
+        return clone;
+    }
+}

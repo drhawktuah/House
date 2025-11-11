@@ -9,73 +9,70 @@ namespace House.House.Services.Economy.Items;
 public class Knife : HouseEconomyItem
 {
     [BsonElement("is_serrated")]
-    public required bool IsSerrated { get; set; } = false;
+    public bool IsSerrated { get; set; } = false;
+
+    protected Knife(string itemName) : base(itemName)
+    {
+        IsStackable = false;
+    }
 }
 
 public sealed class Katana : Knife
 {
-    public Katana(int quantity = 1)
+    public Katana(int quantity = 1) : base("Katana")
     {
-        ItemName = "Katana";
         Quantity = quantity;
         Value = 250;
-        IsStackable = false;
+        IsSerrated = false;
     }
 }
 
 public sealed class Dagger : Knife
 {
-    public Dagger(int quantity = 1)
+    public Dagger(int quantity = 1) : base("Dagger")
     {
-        ItemName = "Dagger";
         Quantity = quantity;
         Value = 75;
-        IsStackable = false;
         IsSerrated = false;
     }
 }
 
 public sealed class BowieKnife : Knife
 {
-    public BowieKnife(int quantity = 1)
+    public BowieKnife(int quantity = 1) : base("Bowie Knife")
     {
-        ItemName = "Bowie Knife";
         Quantity = quantity;
         Value = 150;
-        IsStackable = false;
         IsSerrated = true;
     }
 }
 
 public sealed class Karambit : Knife
 {
-    public Karambit(int quantity = 1)
+    public Karambit(int quantity = 1) : base("Karambit")
     {
-        ItemName = "Karambit";
         Quantity = quantity;
         Value = 400;
-        IsStackable = false;
+        IsSerrated = true;
     }
 }
 
 public sealed class Switchblade : Knife
 {
-    public Switchblade(int quantity = 1)
+    public Switchblade(int quantity = 1) : base("Switchblade")
     {
-        ItemName = "Switchblade";
         Quantity = quantity;
         Value = 175;
-        IsStackable = false;
+        IsSerrated = false;
     }
 }
 
 public sealed class Machete : Knife
 {
-    public Machete(int quantity = 1)
+    public Machete(int quantity = 1) : base("Machete")
     {
-        ItemName = "Machete";
         Quantity = quantity;
         Value = 125;
-        IsStackable = false;
+        IsSerrated = false;
     }
 }

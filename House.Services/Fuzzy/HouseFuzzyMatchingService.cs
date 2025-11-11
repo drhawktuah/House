@@ -12,7 +12,6 @@ using ONFQ.ONFQ.Utilities;
 
 namespace House.House.Services.Fuzzy;
 
-
 public sealed class HouseFuzzyMatchingService
 {
     private readonly CommandsNextExtension commandsNext;
@@ -215,7 +214,6 @@ public sealed class HouseFuzzyMatchingService
         Console.WriteLine($"Loaded {commands.Count} commands into matcher");
     }
 }
-
 
 /*
 public sealed class HouseFuzzyMatchingService

@@ -7,8 +7,29 @@ namespace House.House.Services.Economy;
 
 public static class HouseInventoryConstants
 {
-    public const int MaxItems = 32767;
-    public const int MaxStackableKnives = 3;
-    public const int MaxStackablePerFood = 1500;
-    public const int MaxStackablePerStimulant = 750;
+    public static class General
+    {
+        public const int MaxItems = 32_767;
+    }
+
+    public static class Knives
+    {
+        public const int Max = 5;
+    }
+
+    public static class Food
+    {
+        public const int Max = 1_500;
+    }
+
+    public static class Stimulant
+    {
+        public const int Max = 1_250;
+    }
+
+    public static class Backpack
+    {
+        public const int Max = 15;
+        public const int PerBackpack = 350;
+    }
 }

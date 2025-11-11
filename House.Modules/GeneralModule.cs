@@ -216,18 +216,41 @@ public sealed class GeneralModule : BaseCommandModule
             }
             else
             {
-                var activity = presence.Activities[0];
-
-                activityText = activity.ActivityType switch
+                var activities = presence.Activities.Select(activity =>
                 {
-                    ActivityType.Playing => $"playing **{activity.Name}**",
-                    ActivityType.Streaming => $"streaming **{activity.Name}**",
-                    ActivityType.ListeningTo => $"listening to **{activity.Name}**",
-                    ActivityType.Watching => $"watching **{activity.Name}**",
-                    ActivityType.Competing => $"competing in **{activity.Name}**",
-                    ActivityType.Custom => activity.CustomStatus.Name ?? "custom status",
-                    _ => activity.Name ?? "unknown activity"
-                };
+                    string text = activity.ActivityType switch
+                    {
+                        ActivityType.Playing => $"playing **{activity.Name}**",
+                        ActivityType.Streaming => $"streaming **{activity.Name}**",
+                        ActivityType.ListeningTo => $"listening to **{activity.Name}**",
+                        ActivityType.Watching => $"watching **{activity.Name}**",
+                        ActivityType.Competing => $"competing in **{activity.Name}**",
+                        ActivityType.Custom => activity.CustomStatus.Name ?? "custom status",
+                        _ => activity.Name ?? "unknown activity"
+                    };
+
+                    if (activity.RichPresence != null)
+                    {
+                        if (!string.IsNullOrWhiteSpace(activity.RichPresence.Details))
+                        {
+                            text += $"\nDetails: {activity.RichPresence.Details}";
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(activity.RichPresence.State))
+                        {
+                            text += $"\nState: {activity.RichPresence.State}";
+                        }
+                    }
+
+                    if(!string.IsNullOrWhiteSpace(activity.StreamUrl))
+                    {
+                        text += $"\nStream: {activity.StreamUrl}";
+                    }
+
+                    return text;
+                });
+
+                activityText = string.Join("\n\n", activities);
             }
 
             DiscordEmbedBuilder embedBuilder = new()
