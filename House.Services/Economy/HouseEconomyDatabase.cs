@@ -123,4 +123,15 @@ public class HouseEconomyDatabase
             throw new UserNotFoundException(userId);
         }
     }
+
+    public async Task AddItemAsync(ulong userID, HouseEconomyItem item)
+    {
+        var update = Builders<HouseEconomyUser>.Update.Push(u => u.Inventory, item);
+        var result = await collection.UpdateOneAsync(u => u.ID == userID, update);
+
+        if (result.MatchedCount == 0)
+        {
+            throw new UserNotFoundException(userID);
+        }
+    }
 }

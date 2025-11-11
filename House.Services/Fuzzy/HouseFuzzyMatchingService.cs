@@ -1,5 +1,7 @@
+using System.Reflection;
 using System.Text;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using House.House.Attributes;
 using House.House.Utils;
@@ -356,6 +358,11 @@ public sealed class HouseFuzzyMatchingService
         foreach (Command command in commandsNext.RegisteredCommands.Values)
         {
             if (commands.Contains(command))
+            {
+                continue;
+            }
+
+            if(command.Module?.ModuleType.GetCustomAttribute<HiddenAttribute>() is not null)
             {
                 continue;
             }
