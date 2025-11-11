@@ -18,4 +18,7 @@ public class HouseEconomyUser
 
     [BsonElement("cash")]
     public long Cash { get; set; } = 0;
+
+    [BsonElement("inventory")]
+    public List<HouseEconomyItem> Inventory { get; set; } = [];
 }

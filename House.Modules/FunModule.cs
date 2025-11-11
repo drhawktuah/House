@@ -252,7 +252,7 @@ public sealed class FunModule : BaseCommandModule
     }
 
     [Command("snipe")]
-    [Aliases("getdeletedmessage")]
+    [Aliases("snipemessage")]
     [Description("Shows the last deleted message in this channel")]
     public async Task SnipeAsync(CommandContext context)
     {
