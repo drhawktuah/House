@@ -2,24 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using House.House.Services.Economy.General;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace House.House.Services.Economy.Items;
-
-public enum AmmoType
-{
-    None = -1,
-    NineMM = 0,
-    TwelveGauge = 1,
-    ThreeOhEight = 2,
-    Bolts = 3,
-    PlasmaCell = 4,
-    Arc = 5,
-    Air = 6,
-    FiveFiveSix = 7,
-    SevenSixTwo = 8
-}
-
 
 public class Gun : HouseEconomyItem
 {
@@ -42,9 +28,10 @@ public class Gun : HouseEconomyItem
     [BsonElement("fire_rate")]
     public float FireRate { get; set; } = 0f;
 
-    protected Gun(string itemName) : base(itemName)
+    protected Gun(string itemName) : base(itemName, HouseItemType.Firearm)
     {
-        
+        IsStackable = true;
+        IsPurchaseable = true;
     }
 }
 
@@ -54,8 +41,6 @@ public sealed class Handgun : Gun
     {
         Quantity = quantity;
         Value = 1500;
-        IsStackable = true;
-
         Damage = 35;
         Range = 50f;
         AmmoType = AmmoType.NineMM;
@@ -63,7 +48,6 @@ public sealed class Handgun : Gun
         FireRate = 3.0f;
 
         Description = "A basic sidearm for close encounters.";
-
         Rarity = Rarity.Common;
     }
 }
@@ -74,37 +58,14 @@ public sealed class Shotgun : Gun
     {
         Quantity = quantity;
         Value = 3500;
-        IsStackable = true;
-
         Damage = 90;
         Range = 25f;
         AmmoType = AmmoType.TwelveGauge;
         MagazineSize = 8;
         FireRate = 1.2f;
 
-        Description = "Close-range beast. One shot, one chunk.";
-
+        Description = "Close-range powerhouse. One shot, one chunk.";
         Rarity = Rarity.Uncommon;
-    }
-}
-
-public sealed class SniperRifle : Gun
-{
-    public SniperRifle(int quantity = 1) : base("Sniper Rifle")
-    {
-        Quantity = quantity;
-        Value = 7000;
-        IsStackable = true;
-
-        Damage = 150;
-        Range = 200f;
-        AmmoType = AmmoType.ThreeOhEight;
-        MagazineSize = 5;
-        FireRate = 0.8f;
-
-        Description = "For when you need to delete something from across the map.";
-
-        Rarity = Rarity.Rare;
     }
 }
 
@@ -114,16 +75,30 @@ public sealed class AssaultRifle : Gun
     {
         Quantity = quantity;
         Value = 5000;
-        IsStackable = true;
-
         Damage = 45;
         Range = 100f;
         AmmoType = AmmoType.FiveFiveSix;
         MagazineSize = 45;
         FireRate = 8.5f;
 
-        Description = "For when you need to spray someone into mince.";
+        Description = "Versatile automatic rifle for any engagement.";
+        Rarity = Rarity.Rare;
+    }
+}
 
+public sealed class SniperRifle : Gun
+{
+    public SniperRifle(int quantity = 1) : base("Sniper Rifle")
+    {
+        Quantity = quantity;
+        Value = 7000;
+        Damage = 150;
+        Range = 200f;
+        AmmoType = AmmoType.ThreeOhEight;
+        MagazineSize = 5;
+        FireRate = 0.8f;
+
+        Description = "Extreme precision from long distances.";
         Rarity = Rarity.Rare;
     }
 }
@@ -134,15 +109,13 @@ public sealed class LMG : Gun
     {
         Quantity = quantity;
         Value = 6000;
-        IsStackable = true;
         Damage = 60;
         Range = 80f;
         AmmoType = AmmoType.SevenSixTwo;
         MagazineSize = 100;
         FireRate = 6.0f;
 
-        Description = "A portable machine gun used for spray and pray.";
-
+        Description = "High-capacity automatic weapon. Spray and pray.";
         Rarity = Rarity.Epic;
     }
 }
@@ -151,19 +124,15 @@ public sealed class Crossbow : Gun
 {
     public Crossbow(int quantity = 1) : base("Crossbow")
     {
-        ItemName = "Crossbow";
         Quantity = quantity;
         Value = 750;
-        IsStackable = true;
-
         Damage = 60;
         Range = 40f;
         AmmoType = AmmoType.Bolts;
         MagazineSize = 1;
         FireRate = 0.6f;
 
-        Description = "Silent, deadly, and makes you feel like a medieval assassin.";
-        
+        Description = "Silent and deadly — the assassin’s choice.";
         Rarity = Rarity.Uncommon;
     }
 }
@@ -176,8 +145,8 @@ public sealed class RayGun : Gun
     {
         Quantity = 1;
         Value = 100_000;
-        IsStackable = true;
         IsSpecial = true;
+        IsPurchaseable = false;
 
         Damage = 350;
         Range = 250f;
@@ -185,10 +154,7 @@ public sealed class RayGun : Gun
         MagazineSize = 20;
         FireRate = 2.5f;
 
-        IsPurchaseable = false;
-
         Description = "Classic alien blaster. Pew pew your way to round 100.";
-
         Rarity = Rarity.WonderWeapon;
     }
 }
@@ -199,8 +165,8 @@ public sealed class RayGunMarkII : Gun
     {
         Quantity = 1;
         Value = 150_000;
-        IsStackable = true;
         IsSpecial = true;
+        IsPurchaseable = false;
 
         Damage = 275;
         Range = 185f;
@@ -208,10 +174,7 @@ public sealed class RayGunMarkII : Gun
         MagazineSize = 21;
         FireRate = 5.5f;
 
-        IsPurchaseable = false;
-
-        Description = "Burst-fire energy weapon that makes zombies evaporate.";
-
+        Description = "Burst-fire alien rifle that vaporizes targets.";
         Rarity = Rarity.WonderWeapon;
     }
 }
@@ -222,8 +185,8 @@ public sealed class WunderwaffeDG2 : Gun
     {
         Quantity = 1;
         Value = 10_000_000;
-        IsStackable = true;
         IsSpecial = true;
+        IsPurchaseable = false;
 
         Damage = 10000;
         Range = 50f;
@@ -231,10 +194,7 @@ public sealed class WunderwaffeDG2 : Gun
         MagazineSize = 3;
         FireRate = 0.5f;
 
-        IsPurchaseable = false;
-
-        Description = "Harness the power of electricity. Don't cross the streams.";
-
+        Description = "Harness electricity itself. Don’t cross the streams.";
         Rarity = Rarity.WonderWeapon;
     }
 }
@@ -245,8 +205,8 @@ public sealed class ThunderGun : Gun
     {
         Quantity = 1;
         Value = 10_000_000;
-        IsStackable = true;
         IsSpecial = true;
+        IsPurchaseable = false;
 
         Damage = 10000;
         Range = 25f;
@@ -254,10 +214,7 @@ public sealed class ThunderGun : Gun
         MagazineSize = 4;
         FireRate = 0.25f;
 
-        IsPurchaseable = false;
-
-        Description = "Sends zombies flying. Literally.";
-
+        Description = "Unleashes compressed air blasts that send enemies flying.";
         Rarity = Rarity.WonderWeapon;
     }
 }

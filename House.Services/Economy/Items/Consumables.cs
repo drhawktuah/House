@@ -2,19 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using House.House.Services.Economy.General;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace House.House.Services.Economy.Items;
-
-public sealed class Medkit : HouseEconomyItem
-{
-    public Medkit(int quantity = 1) : base("Medkit")
-    {
-        Quantity = quantity;
-        Value = 300;
-        IsStackable = false;
-    }
-}
 
 #region Base Classes
 
@@ -29,7 +20,7 @@ public abstract class Stimulant : HouseEconomyItem
     [BsonElement("is_illegal")]
     public bool IsIllegal { get; set; } = false;
 
-    protected Stimulant(string itemName) : base(itemName)
+    protected Stimulant(string itemName) : base(itemName, HouseItemType.Drug)
     {
         IsStackable = false;
     }
@@ -41,12 +32,12 @@ public abstract class FoodItem : HouseEconomyItem
     public int NutritionValue { get; set; } = 0;
 
     [BsonElement("duration_seconds")]
-    public int DurationSeconds { get; set; } = 0; // for temporary buffs
+    public int DurationSeconds { get; set; } = 0;
 
     [BsonElement("effect_description")]
     public string EffectDescription { get; set; } = "No effect.";
 
-    protected FoodItem(string itemName) : base(itemName)
+    protected FoodItem(string itemName) : base(itemName, HouseItemType.Food)
     {
         IsStackable = true;
         IsPurchaseable = true;
@@ -54,9 +45,82 @@ public abstract class FoodItem : HouseEconomyItem
     }
 }
 
+public abstract class MedicalItem : HouseEconomyItem
+{
+    [BsonElement("healing_amount")]
+    public int HealingAmount { get; set; } = 0;
+
+    [BsonElement("effect_description")]
+    public string EffectDescription { get; set; } = "Heals health.";
+
+    protected MedicalItem(string itemName) : base(itemName, HouseItemType.Medical)
+    {
+        IsStackable = false;
+        IsPurchaseable = true;
+    }
+}
+
 #endregion
 
-#region Stimulants
+public sealed class Medkit : MedicalItem
+{
+    public Medkit(int quantity = 1) : base("Medkit")
+    {
+        Quantity = quantity;
+        Value = 300;
+        HealingAmount = 100;
+        EffectDescription = "Restores a large portion of health.";
+        Rarity = Rarity.Uncommon;
+    }
+}
+
+public sealed class Painkillers : MedicalItem
+{
+    public Painkillers(int quantity = 1) : base("Painkillers")
+    {
+        Quantity = quantity;
+        Value = 120;
+        HealingAmount = 0;
+        EffectDescription = "Temporarily reduces pain and damage taken.";
+        Rarity = Rarity.Common;
+    }
+}
+
+public sealed class Morphine : MedicalItem
+{
+    public Morphine(int quantity = 1) : base("Morphine")
+    {
+        Quantity = quantity;
+        Value = 500;
+        HealingAmount = 0;
+        EffectDescription = "Strong painkiller; restores health and numbs pain.";
+        Rarity = Rarity.Rare;
+    }
+}
+
+public sealed class Oxycodone : MedicalItem
+{
+    public Oxycodone(int quantity = 1) : base("Oxycodone")
+    {
+        Quantity = quantity;
+        Value = 1200;
+        HealingAmount = 0;
+        EffectDescription = "Powerful painkiller; temporarily reduces incoming damage.";
+        Rarity = Rarity.Rare;
+    }
+}
+
+public sealed class Vicodin : MedicalItem
+{
+    public Vicodin(int quantity = 1) : base("Vicodin")
+    {
+        Quantity = quantity;
+        Value = 4000;
+        HealingAmount = 0;
+        EffectDescription = "Extreme pain relief; massive intellectual gain.";
+        Rarity = Rarity.Legendary;
+    }
+}
 
 public sealed class CaffeinePill : Stimulant
 {
@@ -65,8 +129,7 @@ public sealed class CaffeinePill : Stimulant
         Quantity = quantity;
         Value = 50;
         DurationSeconds = 300;
-        Description = "Increases alertness and reaction time for 5 minutes.";
-        IsIllegal = false;
+        EffectDescription = "Boosts energy and reaction time for 5 minutes.";
     }
 }
 
@@ -77,8 +140,7 @@ public sealed class Vodka : Stimulant
         Quantity = quantity;
         Value = 35;
         DurationSeconds = 500;
-        Description = "Everything's suddenly interesting. You could talk and do anything for hours.";
-        IsIllegal = false;
+        EffectDescription = "Boosts morale and confidence temporarily.";
     }
 }
 
@@ -89,21 +151,8 @@ public sealed class AdrenalineShot : Stimulant
         Quantity = quantity;
         Value = 300;
         DurationSeconds = 180;
-        EffectDescription = "Boosts speed and damage for a short duration.";
+        EffectDescription = "Boosts speed and power briefly.";
         Rarity = Rarity.Rare;
-    }
-}
-
-public sealed class Painkillers : Stimulant
-{
-    public Painkillers(int quantity = 1) : base("Painkillers")
-    {
-        Quantity = quantity;
-        Value = 120;
-        DurationSeconds = 240;
-        EffectDescription = "Reduces damage taken for a short time.";
-        IsIllegal = false;
-        Rarity = Rarity.Common;
     }
 }
 
@@ -114,7 +163,7 @@ public sealed class Cocaine : Stimulant
         Quantity = quantity;
         Value = 2000;
         DurationSeconds = 120;
-        EffectDescription = "Extreme energy boost but may cause side effects.";
+        EffectDescription = "Massive energy boost with side effects.";
         IsIllegal = true;
         Rarity = Rarity.Rare;
     }
@@ -127,7 +176,7 @@ public sealed class MarijuanaJoint : Stimulant
         Quantity = quantity;
         Value = 250;
         DurationSeconds = 420;
-        EffectDescription = "Relaxes the user and slightly restores morale.";
+        EffectDescription = "Relaxes the user and restores morale slightly.";
         IsIllegal = true;
         Rarity = Rarity.Uncommon;
     }
@@ -140,7 +189,7 @@ public sealed class PsychedelicMushrooms : Stimulant
         Quantity = quantity;
         Value = 800;
         DurationSeconds = 600;
-        EffectDescription = "Alters perception; may cause visual distortions.";
+        EffectDescription = "Alters perception and causes vivid hallucinations.";
         IsIllegal = true;
         Rarity = Rarity.Rare;
     }
@@ -153,7 +202,7 @@ public sealed class Methamphetamine : Stimulant
         Quantity = quantity;
         Value = 5000;
         DurationSeconds = 300;
-        EffectDescription = "Increases energy and speed dramatically but with strong side effects.";
+        EffectDescription = "Increases energy and focus drastically.";
         IsIllegal = true;
         Rarity = Rarity.Epic;
     }
@@ -166,7 +215,7 @@ public sealed class BlueMethamphetamine : Stimulant
         Quantity = quantity;
         Value = 10000;
         DurationSeconds = 600;
-        EffectDescription = "A stronger, purer, and more vibrant high than regular methamphetamine but with superior side effects.";
+        EffectDescription = "Highly pure formula; extreme power, extreme risk.";
         IsIllegal = true;
         Rarity = Rarity.Legendary;
     }
@@ -179,72 +228,7 @@ public sealed class LSD : Stimulant
         Quantity = quantity;
         Value = 3500;
         DurationSeconds = 900;
-        EffectDescription = "Causes hallucinations and alters perception for 15 minutes.";
-        IsIllegal = true;
-        Rarity = Rarity.Rare;
-    }
-}
-
-public sealed class ExperimentalSerum : Stimulant
-{
-    public ExperimentalSerum(int quantity = 1) : base("Experimental Serum")
-    {
-        Quantity = quantity;
-        Value = 10000;
-        DurationSeconds = 180;
-        EffectDescription = "Unpredictable effects, could be very beneficial or harmful.";
-        IsIllegal = true;
-        Rarity = Rarity.Legendary;
-    }
-}
-
-public sealed class EnergyDrink : Stimulant
-{
-    public EnergyDrink(int quantity = 1) : base("Energy Drink")
-    {
-        Quantity = quantity;
-        Value = 100;
-        DurationSeconds = 120;
-        EffectDescription = "Slightly boosts stamina and alertness.";
-        IsIllegal = false;
-        Rarity = Rarity.Common;
-    }
-}
-
-public sealed class FocusPill : Stimulant
-{
-    public FocusPill(int quantity = 1) : base("Focus Pill")
-    {
-        Quantity = quantity;
-        Value = 200;
-        DurationSeconds = 180;
-        EffectDescription = "Improves concentration and aim temporarily.";
-        IsIllegal = false;
-        Rarity = Rarity.Uncommon;
-    }
-}
-
-public sealed class Morphine : Stimulant
-{
-    public Morphine(int quantity = 1) : base("Morphine")
-    {
-        Quantity = quantity;
-        Value = 500;
-        DurationSeconds = 300;
-        EffectDescription = "Painkiller that temporarily restores health and reduces pain effects.";
-        IsIllegal = true;
-        Rarity = Rarity.Rare;
-    }
-}
-
-public sealed class Oxycodone : Stimulant
-{
-    public Oxycodone(int quantity = 1) : base("Oxycodone")
-    {
-        Quantity = quantity;
-        Value = 1200;
-        DurationSeconds = 420;
-        EffectDescription = "Strong painkiller; may reduce damage taken temporarily.";
+        EffectDescription = "Hallucinogenic; distorts perception for 15 minutes.";
         IsIllegal = true;
         Rarity = Rarity.Rare;
     }
@@ -257,7 +241,7 @@ public sealed class Heroin : Stimulant
         Quantity = quantity;
         Value = 5000;
         DurationSeconds = 600;
-        EffectDescription = "Very strong effect; temporarily boosts health regen and reduces damage perception, but high addiction risk.";
+        EffectDescription = "Boosts health regen; extremely addictive.";
         IsIllegal = true;
         Rarity = Rarity.Epic;
     }
@@ -270,21 +254,8 @@ public sealed class Fentanyl : Stimulant
         Quantity = quantity;
         Value = 15000;
         DurationSeconds = 300;
-        EffectDescription = "Extremely potent opioid; massive boost to health regeneration, very high risk.";
+        EffectDescription = "Extremely potent; massive health regen boost, lethal risk.";
         IsIllegal = true;
-        Rarity = Rarity.Legendary;
-    }
-}
-
-public sealed class Vicodin : Stimulant
-{
-    public Vicodin(int quantity = 1) : base("Vicodin")
-    {
-        Quantity = quantity;
-        Value = 4000;
-        DurationSeconds = 380;
-        EffectDescription = "Extreme pain relief; massive intellectual gain";
-        IsIllegal = false;
         Rarity = Rarity.Legendary;
     }
 }
@@ -296,15 +267,47 @@ public sealed class Codeine : Stimulant
         Quantity = quantity;
         Value = 200;
         DurationSeconds = 180;
-        EffectDescription = "Mild pain relief and temporary calm effect.";
-        IsIllegal = false;
+        EffectDescription = "Mild pain relief and calmness.";
         Rarity = Rarity.Uncommon;
     }
 }
 
-#endregion
+public sealed class ExperimentalSerum : Stimulant
+{
+    public ExperimentalSerum(int quantity = 1) : base("Experimental Serum")
+    {
+        Quantity = quantity;
+        Value = 10000;
+        DurationSeconds = 180;
+        EffectDescription = "Unpredictable outcome: may enhance or harm.";
+        Rarity = Rarity.Legendary;
+        IsIllegal = true;
+    }
+}
 
-#region Food Items
+public sealed class EnergyDrink : Stimulant
+{
+    public EnergyDrink(int quantity = 1) : base("Energy Drink")
+    {
+        Quantity = quantity;
+        Value = 100;
+        DurationSeconds = 120;
+        EffectDescription = "Small stamina and alertness boost.";
+        Rarity = Rarity.Common;
+    }
+}
+
+public sealed class FocusPill : Stimulant
+{
+    public FocusPill(int quantity = 1) : base("Focus Pill")
+    {
+        Quantity = quantity;
+        Value = 200;
+        DurationSeconds = 180;
+        EffectDescription = "Improves focus and accuracy temporarily.";
+        Rarity = Rarity.Uncommon;
+    }
+}
 
 public sealed class Apple : FoodItem
 {
@@ -314,7 +317,6 @@ public sealed class Apple : FoodItem
         Value = 10;
         NutritionValue = 5;
         EffectDescription = "Restores a small amount of health.";
-        Rarity = Rarity.Common;
     }
 }
 
@@ -325,8 +327,7 @@ public sealed class Bread : FoodItem
         Quantity = quantity;
         Value = 15;
         NutritionValue = 10;
-        EffectDescription = "Restores a moderate amount of health.";
-        Rarity = Rarity.Common;
+        EffectDescription = "Restores moderate health.";
     }
 }
 
@@ -337,7 +338,7 @@ public sealed class Steak : FoodItem
         Quantity = quantity;
         Value = 75;
         NutritionValue = 25;
-        EffectDescription = "Restores a significant amount of health.";
+        EffectDescription = "Restores significant health.";
         Rarity = Rarity.Uncommon;
     }
 }
@@ -349,8 +350,7 @@ public sealed class ChocolateBar : FoodItem
         Quantity = quantity;
         Value = 25;
         NutritionValue = 10;
-        EffectDescription = "Restores a small amount of health and morale.";
-        Rarity = Rarity.Common;
+        EffectDescription = "Restores some health and morale.";
     }
 }
 
@@ -361,7 +361,7 @@ public sealed class Salad : FoodItem
         Quantity = quantity;
         Value = 40;
         NutritionValue = 15;
-        EffectDescription = "Restores health and slightly increases energy.";
+        EffectDescription = "Restores health and boosts energy slightly.";
         Rarity = Rarity.Uncommon;
     }
 }
@@ -373,7 +373,7 @@ public sealed class Burger : FoodItem
         Quantity = quantity;
         Value = 100;
         NutritionValue = 30;
-        EffectDescription = "Restores a large amount of health and energy.";
+        EffectDescription = "Restores lots of health and energy.";
         Rarity = Rarity.Rare;
     }
 }
@@ -385,7 +385,7 @@ public sealed class Sushi : FoodItem
         Quantity = quantity;
         Value = 150;
         NutritionValue = 35;
-        EffectDescription = "Restores a lot of health and slightly boosts morale.";
+        EffectDescription = "Restores health and boosts morale.";
         Rarity = Rarity.Rare;
     }
 }
@@ -398,9 +398,7 @@ public sealed class LegendaryFeast : FoodItem
         Value = 500;
         NutritionValue = 100;
         DurationSeconds = 300;
-        EffectDescription = "Massively restores health and gives temporary stat boosts.";
+        EffectDescription = "Fully restores health and grants buffs.";
         Rarity = Rarity.Legendary;
     }
 }
-
-#endregion

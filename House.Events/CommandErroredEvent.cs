@@ -98,6 +98,15 @@ public sealed class CommandErroredEvent : HouseCommandsNextEvent
                 break;
             */
 
+            case InvalidOverloadException:
+                var rawArgs = context.RawArgumentString;
+                var commandName = context.Command?.QualifiedName ?? "unknown";
+
+                var overloads = string.Join("\n", context.Command?.Overloads.Select(o => $"`{commandName} {string.Join(' ', o.Arguments.Select(a => $"<{a.Name}:{a.Type.Name}>"))}`") ?? []);
+
+                await context.RespondAsync($"`invalid usage of '{commandName}' - provided arguments: \"{rawArgs}\"\nexpected overloads:\n{overloads}`");
+                break;
+
             case NotFoundException:
                 break;
 

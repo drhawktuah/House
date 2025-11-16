@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace House.House.Services.Economy;
+namespace House.House.Services.Economy.General;
 
 public static class HouseInventoryConstants
 {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using House.House.Services.Economy;
+using House.House.Services.Economy.General;
 
 namespace House.House.Extensions;
 

@@ -268,7 +268,7 @@ public sealed class HelpModule : BaseCommandModule
                     context.User,
                     helpFormatter.Pages,
                     timeout,
-                    PaginationBehaviour.Ignore,
+                    PaginationBehaviour.WrapAround,
                     ButtonPaginationBehavior.DeleteMessage
                 );
             }

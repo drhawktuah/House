@@ -15,6 +15,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Microsoft.Extensions.Hosting;
+using House.House.Services.Economy.Vendors;
+using House.House.Services.Economy.Market;
 
 namespace House.House.Core;
 
@@ -48,6 +51,13 @@ public sealed class Bot
 
         await client.InitializeAsync();
         await client.ConnectAsync();
+
+        var hostedServices = commandsNext.Services.GetServices<IHostedService>();
+
+        foreach (var hostedService in hostedServices)
+        {
+            await hostedService.StartAsync(CancellationToken.None);
+        }
 
         commandsNext.Services.GetRequiredService<AntiNukeService>(); // please ignore this, it just forces the anti-nuke service to initialize
 
@@ -110,6 +120,8 @@ public sealed class Bot
         services.AddSingleton(sp => new SnipeRepository(sp.GetRequiredService<IMongoDatabase>()));
         services.AddSingleton(sp => new SuspectMemberRepository(sp.GetRequiredService<IMongoDatabase>()));
         services.AddSingleton(sp => new AntiNukeService(client));
+        services.AddHostedService(sp => new VendorAutoRestocker(TimeSpan.FromHours(3)));
+        services.AddHostedService(sp => new MarketAutoUpdater(TimeSpan.FromHours(3)));
 
         services.AddSingleton(sp =>
         {

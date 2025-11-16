@@ -1,6 +1,7 @@
+using House.House.Services.Economy.General;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace House.House.Services.Economy;
+namespace House.House.Services.Economy.General;
 
 public abstract class HouseEconomyItem
 {
@@ -26,9 +27,13 @@ public abstract class HouseEconomyItem
     [BsonElement("is_purchasable")]
     public bool IsPurchaseable { get; set; } = true;
 
-    protected HouseEconomyItem(string itemName)
+    [BsonElement("type")]
+    public HouseItemType ItemType { get; protected set; } = HouseItemType.None;
+
+    protected HouseEconomyItem(string itemName, HouseItemType itemType)
     {
         ItemName = itemName;
+        ItemType = itemType;
     }
 
     public virtual HouseEconomyItem CloneWithQuantity(int quantity)

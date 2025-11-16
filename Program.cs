@@ -29,10 +29,17 @@ public class Program
 
         foreach (var filePath in Directory.GetFiles(directoryPath, searchPattern, searchOption))
         {
+            if (filePath.StartsWith("./bin") || filePath.StartsWith("./obj"))
+            {
+                continue;
+            }
+
             try
             {
                 int lineCount = File.ReadLines(filePath).Count();
                 totalLines += lineCount;
+
+                Console.WriteLine($"{filePath} -- {lineCount}");
             }
             catch (Exception ex)
             {

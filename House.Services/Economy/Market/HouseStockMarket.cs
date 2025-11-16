@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace House.House.Services.Economy;
+namespace House.House.Services.Economy.Market;
 
 public class HouseStockMarket
 {
     [BsonId]
     [BsonRepresentation(BsonType.String)]
-    public required string Id { get; set; } = Guid.NewGuid().ToString();
+    public string ID { get; set; } = Guid.NewGuid().ToString();
 
     [BsonElement("stock_market_name")]
     public required string Name { get; set; }

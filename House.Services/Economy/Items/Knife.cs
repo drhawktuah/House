@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using House.House.Services.Economy.General;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace House.House.Services.Economy.Items;
@@ -11,7 +12,7 @@ public class Knife : HouseEconomyItem
     [BsonElement("is_serrated")]
     public bool IsSerrated { get; set; } = false;
 
-    protected Knife(string itemName) : base(itemName)
+    protected Knife(string itemName) : base(itemName, HouseItemType.MeleeWeapon)
     {
         IsStackable = false;
     }

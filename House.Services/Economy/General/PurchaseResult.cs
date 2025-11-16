@@ -1,4 +1,4 @@
-namespace House.House.Services.Economy;
+namespace House.House.Services.Economy.General;
 
 public enum PurchaseResult
 {

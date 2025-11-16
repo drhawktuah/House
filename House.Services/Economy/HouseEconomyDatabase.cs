@@ -1,3 +1,6 @@
+using House.House.Services.Economy;
+using House.House.Services.Economy.General;
+using House.House.Services.Economy.Vendors;
 using MongoDB.Driver;
 
 namespace House.House.Services.Economy;

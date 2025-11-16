@@ -54,8 +54,8 @@ public class EconomyModule : BaseCommandModule
     }
 
     [Command("rob")]
-    [Aliases("steal", "burglarize", "blackerize", "blackerise", "burglarise", "robplayer")]
-    [Description("Basically pulls a George Floyd on players with cash in their wallets")]
+    [Aliases("steal", "burglarize", "burglarise", "robplayer")]
+    [Description("Allows you to become Eric Foreman!")]
     [IsPlayer]
     [RequireGuild]
     [Cooldown(1, 35, CooldownBucketType.User)]
@@ -65,7 +65,7 @@ public class EconomyModule : BaseCommandModule
 
         if (player.Cash < 500)
         {
-            await context.RespondAsync("you can't steal from someone with no money in their pockets...can't have shit in detroit");
+            await context.RespondAsync("you can't steal from someone with no money in their pockets...can't have shit in ppth");
             return;
         }
 
@@ -88,8 +88,6 @@ public class EconomyModule : BaseCommandModule
 
         var toBeStealed = Random.Shared.NextLongWithinRange(500, player.Cash);
 
-        // gta 5 canonical lore, lamar and franklin only pulled off a heist (technically, more of a robbery) of up to 2 dye pack stacks split.
-        // i've only added an extra 2,500 because of lore
         var builder = new DiscordEmbedBuilder()
             .WithThumbnail(victim.AvatarUrl)
             .WithTitle(victim.Username)
@@ -97,15 +95,15 @@ public class EconomyModule : BaseCommandModule
 
         if (toBeStealed <= 4_500)
         {
-            builder.WithFooter("some franklin and lamar ass robbery", context.Client.CurrentUser.AvatarUrl);
+            builder.WithFooter("some goofy ahh taub robbery...i can hear the clown music playing", context.Client.CurrentUser.AvatarUrl);
         }
         else if (toBeStealed >= 10_000)
         {
-            builder.WithFooter("some michael ass robbery, nice job", context.Client.CurrentUser.AvatarUrl);
+            builder.WithFooter("a decent wilson scheme...nice work", context.Client.CurrentUser.AvatarUrl);
         }
         else if (toBeStealed == player.Cash)
         {
-            builder.WithFooter("some aiden pearce + damien brenks shit. you've stolen everything, excellent work", context.Client.CurrentUser.AvatarUrl);
+            builder.WithFooter("some house shit. you managed to steal pretty much everything...fly high lisa cuddy my beloved pigeon", context.Client.CurrentUser.AvatarUrl);
         }
         else
         {
@@ -403,19 +401,19 @@ public class EconomyModule : BaseCommandModule
         }
         else
         {
-            await context.RespondAsync("Invalid amount. Use a number, percentage, or a keyword like `max`, `all`, `half`, or `quarter`");
+            await context.RespondAsync("invalid amount. use a number, percentage, or a keyword like `max`, `all`, `half`, or `quarter`");
             return;
         }
 
         if (transferAmount <= 0)
         {
-            await context.RespondAsync("You must transfer more than 0");
+            await context.RespondAsync("you must transfer more than 0");
             return;
         }
 
         if (transferAmount > senderBalance)
         {
-            await context.RespondAsync("You don't have enough funds to transfer that amount");
+            await context.RespondAsync("you don't have enough funds to transfer that amount");
             return;
         }
 
@@ -430,14 +428,14 @@ public class EconomyModule : BaseCommandModule
                 await HouseEconomyDatabase.ModifyBalanceAsync(sender.Id, bank: transferAmount, cash: -transferAmount);
             }
 
-            await context.RespondAsync($"You transferred `{transferAmount:N0}` from your {(fromBank ? "bank" : "wallet")} to your {(fromBank ? "wallet" : "bank")}");
+            await context.RespondAsync($"you transferred `{transferAmount:N0}` from your {(fromBank ? "bank" : "wallet")} to your {(fromBank ? "wallet" : "bank")}");
         }
         else
         {
             await HouseEconomyDatabase.ModifyBalanceAsync(sender.Id, bank: fromBank ? -transferAmount : 0, cash: fromBank ? 0 : -transferAmount);
             await HouseEconomyDatabase.ModifyBalanceAsync(receiver.Id, transferAmount);
 
-            await context.RespondAsync($"You transferred `{transferAmount:N0}` {(fromBank ? "from your bank" : "from your wallet")} to `{receiver.Username}`");
+            await context.RespondAsync($"you transferred `{transferAmount:N0}` {(fromBank ? "from your bank" : "from your wallet")} to `{receiver.Username}`");
         }
     }
 

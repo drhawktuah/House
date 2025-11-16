@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using House.House.Services.Economy.General;
 
-namespace House.House.Services.Economy.Items;
+namespace House.House.Services.Economy.General;
 
 public static class LootTable
 {
